@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-visoft-dev
+spec:
+  secretName: wildcard-visoft-dev
+
+  privateKey:
+    algorithm: ECDSA
+    encoding: PKCS8
+    size: 256
+
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+
+  dnsNames:
+    - "*.visoft.dev"
+
+  issuerRef:
+    name: cloudflare-visoft-dev

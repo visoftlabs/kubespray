@@ -1,0 +1,15 @@
+---
+- name: Install Nvidia GPU Operator
+  ansible.builtin.import_playbook: ./nvidia.yaml
+
+- name: Install Cert Manager
+  ansible.builtin.import_playbook: ./cert.yaml
+
+- name: Install Topolvm
+  ansible.builtin.import_playbook: ./topolvm.yaml
+
+- name: Install Metallb
+  ansible.builtin.import_playbook: ./metallb.yaml
+
+- name: Install Istio
+  ansible.builtin.import_playbook: ./istio.yaml

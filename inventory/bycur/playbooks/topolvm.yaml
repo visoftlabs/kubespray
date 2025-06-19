@@ -1,0 +1,34 @@
+---
+- name: Setup TopoLVM
+  hosts: cluster
+
+  tasks:
+    - name: Create TopoLVM namespace
+      kubernetes.core.k8s:
+        name: topolvm-system
+        kind: Namespace
+        definition:
+          metadata:
+            labels:
+              topolvm.io/webhook: ignore
+
+    - name: Add label to kube-system namespace
+      kubernetes.core.k8s:
+        name: kube-system
+        kind: Namespace
+        merge_type:
+          - strategic-merge
+        definition:
+          metadata:
+            labels:
+              topolvm.io/webhook: ignore
+
+    - name: Install TopoLVM resources
+      kubernetes.core.helm:
+        name: topolvm
+        namespace: topolvm-system
+        chart_ref: topolvm
+        chart_repo_url: https://topolvm.github.io/topolvm
+        atomic: true
+        wait: true
+        values: "{{ lookup('file', './values/topolvm.yaml') | from_yaml }}"

@@ -1,0 +1,18 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: entrypoint
+spec:
+  gatewayClassName: istio
+  listeners:
+    - name: wildcard-visoft-dev-https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.visoft.dev"
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-visoft-dev
+      allowedRoutes:
+        namespaces:
+          from: All

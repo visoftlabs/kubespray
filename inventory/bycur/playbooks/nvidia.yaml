@@ -1,0 +1,15 @@
+---
+- name: Setup Nvidia GPU Operator
+  hosts: cluster
+
+  tasks:
+    - name: Install Nvidia GPU Operator resources
+      kubernetes.core.helm:
+        name: gpu-operator
+        namespace: gpu-operator
+        create_namespace: true
+        chart_ref: gpu-operator
+        chart_repo_url: https://helm.ngc.nvidia.com/nvidia
+        atomic: true
+        wait: true
+        values: "{{ lookup('file', './values/nvidia.yaml') | from_yaml }}"

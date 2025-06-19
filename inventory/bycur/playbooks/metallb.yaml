@@ -1,0 +1,27 @@
+---
+- name: Setup Metallb
+  hosts: cluster
+
+  tasks:
+    - name: Install Metallb resources
+      kubernetes.core.helm:
+        name: metallb
+        namespace: metallb-system
+        create_namespace: true
+        chart_ref: metallb
+        chart_repo_url: https://metallb.github.io/metallb
+        atomic: true
+        wait: true
+        values: "{{ lookup('file', './values/metallb.yaml') | from_yaml }}"
+
+    - name: Create Metallb configmap
+      kubernetes.core.k8s:
+        api_version: metallb.io/v1beta1
+        name: primary
+        namespace: metallb-system
+        kind: IPAddressPool
+        definition:
+          spec:
+            avoidBuggyIPs: true
+            addresses:
+              - 10.3.3.32/30

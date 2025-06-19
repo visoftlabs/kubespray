@@ -1,0 +1,55 @@
+---
+- name: Setup Istio
+  hosts: cluster
+
+  tasks:
+    - name: Install Gateway API CRDs
+      kubernetes.core.k8s:
+        src: https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+        wait: true
+
+    - name: Install Istio Base resources
+      kubernetes.core.helm:
+        name: istio-base
+        namespace: istio-system
+        create_namespace: true
+        chart_ref: base
+        chart_repo_url: https://istio-release.storage.googleapis.com/charts
+        atomic: true
+        wait: true
+        values: "{{ lookup('file', './values/istio-base.yaml') | from_yaml }}"
+
+    - name: Install Istiod resources
+      kubernetes.core.helm:
+        name: istiod
+        namespace: istio-system
+        create_namespace: true
+        chart_ref: istiod
+        chart_repo_url: https://istio-release.storage.googleapis.com/charts
+        atomic: true
+        wait: true
+        values:
+          profile: ambient
+
+    - name: Install CNI resources
+      kubernetes.core.helm:
+        name: istio-cni
+        namespace: istio-system
+        create_namespace: true
+        chart_ref: cni
+        chart_repo_url: https://istio-release.storage.googleapis.com/charts
+        atomic: true
+        wait: true
+        values:
+          profile: ambient
+
+    - name: Install Ztunnel resources
+      kubernetes.core.helm:
+        name: istio-ztunnel
+        namespace: istio-system
+        create_namespace: true
+        chart_ref: ztunnel
+        chart_repo_url: https://istio-release.storage.googleapis.com/charts
+        atomic: true
+        wait: true
+        values: "{{ lookup('file', './values/ztunnel.yaml') | from_yaml }}"
